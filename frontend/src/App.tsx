@@ -1,21 +1,16 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
-import PredictionForm from './pages/PredictionForm'
-import TipsInsights from './pages/TipsInsights'
-import Navbar from './components/Navbar'
+// src/App.tsx
+import { useState } from "react";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const App: React.FC = () => {
-  return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/predict" element={<PredictionForm />} />
-        <Route path="/tips" element={<TipsInsights />} />
-      </Routes>
-    </Router>
-  )
-}
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem("token"));
 
-export default App
+  return isLoggedIn ? (
+    <AdminDashboard />
+  ) : (
+    <AdminLogin onLogin={() => setIsLoggedIn(true)} />
+  );
+};
+
+export default App;
