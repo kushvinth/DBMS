@@ -10,6 +10,7 @@ import os
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from routes.student_routes import router as student_router
+from routes.performance_routes import router as performance_router
 
 load_dotenv()
 loaded_model = joblib.load(os.getenv("MODEL_PATH"))
@@ -52,6 +53,7 @@ app.add_middleware(
 
 app.include_router(admin_router) # admin endpoints
 app.include_router(student_router) # student endpoints
+app.include_router(performance_router) # performance routes
 
 @app.post("/predict")
 def predict(data: list[InputData]):
