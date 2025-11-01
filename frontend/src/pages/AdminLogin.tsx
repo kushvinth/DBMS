@@ -1,50 +1,68 @@
 // src/pages/AdminLogin.tsx
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../api/adminAPI";
 
-interface AdminLoginProps {
-  onLogin: () => void;
-}
+const AdminLogin: React.FC = () => {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const navigate = useNavigate();
 
-const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const handleLogin = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    
     try {
-      const data = await loginAdmin(username, password);
-      localStorage.setItem("token", data.access_token);
-      onLogin();
-    } catch {
-      setError("Invalid credentials. Try again.");
+      const response = await loginAdmin(username, password);
+      localStorage.setItem("token", response.access_token);
+      
+      // Dispatch custom event to trigger App re-render
+      window.dispatchEvent(new Event("logout")); // Using "logout" event name as it's already set up in App
+      
+      navigate("/admin/dashboard");
+    } catch (err) {
+      setError("Invalid credentials");
+      console.error(err);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-      <form onSubmit={handleLogin} className="bg-gray-800 p-8 rounded-2xl shadow-lg w-96">
-        <h2 className="text-2xl mb-6 text-center">Admin Login</h2>
-        {error && <p className="text-red-400 mb-4">{error}</p>}
-        <input
-          type="text"
-          placeholder="Username"
-          className="w-full p-2 mb-4 rounded bg-gray-700"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 mb-4 rounded bg-gray-700"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit" className="w-full p-2 bg-blue-600 rounded hover:bg-blue-700">
-          Login
-        </button>
-      </form>
+    <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-96">
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">
+          Admin Login
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-gray-300 mb-2">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-gray-300 mb-2">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

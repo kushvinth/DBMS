@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 
+
 // Hide fallback message if present (indicates the app mounted)
 const fallbackEl = document.getElementById('app-fallback')
 if (fallbackEl) fallbackEl.style.display = 'none'
