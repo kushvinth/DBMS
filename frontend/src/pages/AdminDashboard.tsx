@@ -68,6 +68,14 @@ const AdminDashboard: React.FC = () => {
             <span className="text-xl">👥</span>
             {sidebarOpen && <span>Manage Students</span>}
           </button>
+
+          <button
+            onClick={() => navigate("/admin/performance")}
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-700 text-gray-300 transition-colors"
+          >
+            <span className="text-xl">📈</span>
+            {sidebarOpen && <span>Performance Summary</span>}
+          </button>
         </nav>
 
         {/* Logout Button */}
