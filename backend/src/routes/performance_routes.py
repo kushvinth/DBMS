@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from src.db.connection import get_connection
-from src.auth.deps import get_current_admin
+from auth.deps import get_current_admin
+from db.connection import get_connection
 
 router = APIRouter(prefix="/admin/performance", tags=["Performance"])
 

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Form, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
-from src.auth.hashing import verify_password
-from src.auth.jwt_handler import create_access_token, decode_access_token
-from src.models.admin_model import get_admin_by_username
+from auth.hashing import verify_password
+from auth.jwt_handler import create_access_token, decode_access_token
+from models.admin_model import get_admin_by_username
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/admin/login")

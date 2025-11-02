@@ -3,8 +3,8 @@ import React from 'react'
 const Home: React.FC = () => {
   return (
     <div className="page">
-      <h2>Welcome to the College Placement Predictor</h2>
-      <p>
+      <h2 style={{ marginBottom: '16px' }}>Welcome to the College Placement Predictor</h2>
+      <p style={{ marginBottom: '32px' }}>
         Enter your academic and personal details to predict your placement outcome
         and explore helpful insights for improving your employability.
       </p>

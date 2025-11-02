@@ -1,7 +1,7 @@
 // src/pages/PredictionForm.tsx
 import React, { useState } from "react";
-import { predictPlacement } from "../api/predictionAPI";
-import { TrendingUp, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { predictPlacement, predictPlacementByStudentId } from "../api/predictionAPI";
+import { TrendingUp, Loader2, CheckCircle2, XCircle, Search } from "lucide-react";
 
 const PredictionForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -15,9 +15,11 @@ const PredictionForm: React.FC = () => {
     Projects_Completed: "",
   });
 
+  const [studentId, setStudentId] = useState<string>("");
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [predictionMode, setPredictionMode] = useState<"manual" | "byId">("manual");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -32,25 +34,37 @@ const PredictionForm: React.FC = () => {
     setLoading(true);
 
     try {
-      // Convert form data to API format
-      const predictionData = [
-        {
-          IQ: parseFloat(formData.IQ),
-          Prev_Sem_Result: parseFloat(formData.Prev_Sem_Result),
-          CGPA: parseFloat(formData.CGPA),
-          Academic_Performance: parseFloat(formData.Academic_Performance),
-          Extra_Curricular_Score: parseFloat(formData.Extra_Curricular_Score),
-          Communication_Skills: parseFloat(formData.Communication_Skills),
-          Projects_Completed: parseInt(formData.Projects_Completed),
-          Internship_Experience_Yes:
-            formData.Internship_Experience === "Yes" ? 1 : 0,
-        },
-      ];
+      if (predictionMode === "byId") {
+        // Predict by student ID
+        const studentIdNum = parseInt(studentId);
+        if (isNaN(studentIdNum)) {
+          throw new Error("Please enter a valid student ID");
+        }
 
-      const response = await predictPlacement(predictionData);
-      const prediction = response.predictions[0];
+        const response = await predictPlacementByStudentId(studentIdNum);
+        setResult(response.prediction);
+      } else {
+        // Manual prediction
+        // Convert form data to API format
+        const predictionData = [
+          {
+            IQ: parseFloat(formData.IQ),
+            Prev_Sem_Result: parseFloat(formData.Prev_Sem_Result),
+            CGPA: parseFloat(formData.CGPA),
+            Academic_Performance: parseFloat(formData.Academic_Performance),
+            Extra_Curricular_Score: parseFloat(formData.Extra_Curricular_Score),
+            Communication_Skills: parseFloat(formData.Communication_Skills),
+            Projects_Completed: parseInt(formData.Projects_Completed),
+            Internship_Experience_Yes:
+              formData.Internship_Experience === "Yes" ? 1 : 0,
+          },
+        ];
 
-      setResult(prediction === "Yes" ? "Yes" : "No");
+        const response = await predictPlacement(predictionData);
+        const prediction = response.predictions[0];
+
+        setResult(prediction === "Yes" ? "Yes" : "No");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to predict placement. Please try again.");
       console.error("Prediction error:", err);
@@ -66,27 +80,77 @@ const PredictionForm: React.FC = () => {
           <div className="flex items-center gap-3 mb-6">
             <TrendingUp className="w-8 h-8 text-blue-400" />
             <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Placement Prediction Form
+              Placement Prediction
             </h2>
           </div>
 
+          {/* Mode Selection */}
+          <div className="mb-6">
+            <div className="flex gap-4 mb-4">
+              <button
+                type="button"
+                onClick={() => setPredictionMode("manual")}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  predictionMode === "manual"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
+              >
+                Manual Entry
+              </button>
+              <button
+                type="button"
+                onClick={() => setPredictionMode("byId")}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  predictionMode === "byId"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
+              >
+                By Student ID
+              </button>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {predictionMode === "byId" ? (
               <div>
                 <label className="block text-gray-300 mb-2 font-semibold">
-                  IQ *
+                  Student ID *
                 </label>
-                <input
-                  type="number"
-                  name="IQ"
-                  value={formData.IQ}
-                  onChange={handleChange}
-                  className="w-full bg-gray-700/50 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  required
-                  min="0"
-                  step="0.01"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600 text-white rounded-xl px-4 py-3 pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter student ID"
+                    required
+                    min="1"
+                  />
+                  <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">
+                  Enter a student ID to fetch their data and predict placement automatically
+                </p>
               </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-gray-300 mb-2 font-semibold">
+                    IQ *
+                  </label>
+                  <input
+                    type="number"
+                    name="IQ"
+                    value={formData.IQ}
+                    onChange={handleChange}
+                    className="w-full bg-gray-700/50 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
 
               <div>
                 <label className="block text-gray-300 mb-2 font-semibold">
@@ -200,8 +264,9 @@ const PredictionForm: React.FC = () => {
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
+                </div>
               </div>
-            </div>
+            )}
 
             {error && (
               <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-xl flex items-center gap-2">
