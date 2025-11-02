@@ -14,9 +14,7 @@ from src.routes.performance_routes import router as performance_router
 
 load_dotenv()
 loaded_model = joblib.load(os.getenv("MODEL_PATH"))
-
-
-
+loaded_scaler = joblib.load(os.getenv("SCALER_PATH"))
 
 class InputData(BaseModel):
     IQ: float
@@ -76,6 +74,8 @@ def predict(data: list[InputData]):
             'Projects_Completed', 'Internship_Experience_Yes'
         ]
         df = df[feature_columns]
+        
+        scaled_features = loaded_scaler.transform(df)
         
         # Make predictions (Random Forest doesn't need scaling)
         predictions = loaded_model.predict(df)
