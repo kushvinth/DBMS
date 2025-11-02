@@ -11,7 +11,7 @@ const tips = [
 const TipsInsights: React.FC = () => {
   return (
     <div className="page">
-      <h2>Placement Tips & Insights</h2>
+      <h2 style={{ marginBottom: '24px' }}>Placement Tips & Insights</h2>
       <div className="tips-grid">
         {tips.map((tip, i) => (
           <div key={i} className="tip-card">

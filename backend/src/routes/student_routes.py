@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from src.auth.deps import get_current_admin
-import src.models.student_model as student_model
+from auth.deps import get_current_admin
+import models.student_model as student_model
 
 router = APIRouter(prefix="/admin/students", tags=["Students"])
 
