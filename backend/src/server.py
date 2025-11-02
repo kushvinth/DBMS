@@ -191,6 +191,7 @@ def predict_by_student_id(student_id: int):
             'Projects_Completed', 'Internship_Experience_Yes'
         ]
         df = df[feature_columns]
+        scaled_features = loaded_scaler.transform(df)
         
         # Make prediction
         prediction = loaded_model.predict(df)[0]
