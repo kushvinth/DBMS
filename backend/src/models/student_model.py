@@ -1,5 +1,5 @@
 # src/models/student_model.py
-from db.connection import get_connection
+from src.db.connection import get_connection
 
 def add_student(student: dict):
     conn = get_connection()

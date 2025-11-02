@@ -5,6 +5,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManageStudents from "./pages/ManageStudents";
 import PerformanceSummary from "./pages/PerformanceSummary";
+import PlacementPrediction from "./pages/PlacementPrediction";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
@@ -48,6 +49,10 @@ const App: React.FC = () => {
         <Route 
           path="/admin/performance" 
           element={isLoggedIn ? <PerformanceSummary /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/admin/prediction" 
+          element={isLoggedIn ? <PlacementPrediction /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/" 
